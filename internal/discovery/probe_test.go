@@ -1,4 +1,4 @@
-package wsdd
+package discovery
 
 import (
 	"testing"
