@@ -1,6 +1,6 @@
 module github.com/korprulu/go-onvif-s
 
-go 1.15
+go 1.19
 
 require (
 	github.com/beevik/etree v1.1.0
