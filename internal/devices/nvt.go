@@ -3,19 +3,21 @@ package devices
 
 import (
 	"context"
-	"fmt"
-	"io"
+	"errors"
 	"net/http"
 
-	"github.com/jfsmig/onvif/device"
 	"github.com/jfsmig/onvif/networking"
 	"github.com/jfsmig/onvif/sdk"
-	"github.com/korprulu/go-onvif-s/internal/utils"
+	"github.com/jfsmig/onvif/xsd/onvif"
 )
 
 // NVT ...
 type NVT struct {
-	device sdk.Appliance
+	device     sdk.Appliance
+	client     *networking.Client
+	descriptor *sdk.DeviceDescriptor
+	profiles   *sdk.Profiles
+	media      *sdk.Media
 }
 
 // NVTConfig ...
@@ -35,43 +37,70 @@ func NewNVT(ctx context.Context, cfg NVTConfig) (*NVT, error) {
 	}
 
 	auth := networking.ClientAuth{
-		Username: "admin",
-		Password: "590885",
+		Username: cfg.Username,
+		Password: cfg.Password,
 	}
 
-	device, err := sdk.NewDevice(ctx, info, auth, cfg.httpClient)
+	client, err := networking.NewClient(info, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	device, err := sdk.WrapClient(ctx, client, auth)
 	if err != nil {
 		return nil, err
 	}
 
 	return &NVT{
 		device: device,
+		client: client,
 	}, nil
 }
 
-// Info print the NVT info
-func (nvt *NVT) Info() map[string]string {
-	return map[string]string{
-		"XAddr": nvt.client.GetEndpoint("device"),
-		"UUID":  nvt.client.GetUUID(),
+// Descriptor gets the device descriptor
+func (nvt *NVT) Descriptor(ctx context.Context) *sdk.DeviceDescriptor {
+	if nvt.descriptor != nil {
+		return nvt.descriptor
 	}
+	deviceDescriptor := nvt.device.FetchDeviceDescriptor(ctx)
+	nvt.descriptor = &deviceDescriptor
+	return nvt.descriptor
+}
+
+// Profiles get device profiles
+func (nvt *NVT) Profiles(ctx context.Context) *sdk.Profiles {
+	if nvt.profiles != nil {
+		return nvt.profiles
+	}
+	profiles := nvt.device.FetchProfiles(ctx)
+	nvt.profiles = &profiles
+	return nvt.profiles
+}
+
+// GetStreamURI ...
+func (nvt *NVT) GetStreamURI(ctx context.Context, profileToken string) (string, error) {
+	profiles := nvt.Profiles(ctx)
+
+	if profile, ok := profiles.Profiles[onvif.ReferenceToken(profileToken)]; ok {
+		return string(profile.Uris.Stream.Uri), nil
+	}
+
+	return "", errors.New("profile not found")
+}
+
+// GetMedia ...
+func (nvt *NVT) GetMedia(ctx context.Context) (*sdk.Media, error) {
+	if nvt.media != nil {
+		return nvt.media, nil
+	}
+
+	media := nvt.device.FetchMedia(ctx)
+	nvt.media = &media
+
+	return &media, nil
 }
 
 // Initial ...
 func (nvt *NVT) Initial(ctx context.Context) error {
-	resp, err := nvt.client.CallMethod(ctx, &device.GetServices{})
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	respData, err := io.ReadAll(resp.Body)
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println(utils.XMLFormat(respData))
-		return fmt.Errorf("http request error: %d", resp.StatusCode)
-	}
-
-	fmt.Println(utils.XMLFormat(respData))
-
 	return nil
 }

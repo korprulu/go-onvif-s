@@ -1,7 +1,10 @@
+// Package main ...
 package main
 
 import (
-	"github.com/korprulu/go-onvif-s/internal/discovery"
+	"context"
+
+	"github.com/korprulu/go-onvif-s/services/device"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -9,15 +12,11 @@ import (
 func main() {
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 
-	prober := &discovery.Prober{}
+	ctx := context.Background()
 
-	devices, err := prober.Probe()
+	dev, err := device.New(device.Info{Addr: "192.168.1.102"}, nil, device.WithAuth("admin", "590885"))
 	if err != nil {
-		log.Error().Msg(err.Error())
-		return
+		log.Fatal().Err(err).Send()
 	}
 
-	for _, device := range devices {
-		log.Info().Msgf("devices: %#v", *device)
-	}
 }

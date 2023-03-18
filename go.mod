@@ -3,6 +3,7 @@ module github.com/korprulu/go-onvif-s
 go 1.19
 
 require (
+	github.com/go-xmlfmt/xmlfmt v1.1.2
 	github.com/jfsmig/onvif v1.1.0
 	github.com/rs/zerolog v1.29.0
 )
