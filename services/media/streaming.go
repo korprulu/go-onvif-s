@@ -5,21 +5,37 @@ import (
 	"context"
 
 	"github.com/jfsmig/onvif/media"
-	"github.com/jfsmig/onvif/xsd/onvif"
-	"github.com/korprulu/go-onvif-s/internal/utils"
 )
 
-// Profile ...
-type Profile onvif.Profile
+// GetProfilesResponse ...
+type GetProfilesResponse media.GetProfilesResponse
 
 // GetProfiles ...
-func (m *Media) GetProfiles(ctx context.Context) ([]Profile, error) {
+func (m *Media) GetProfiles(ctx context.Context) (*GetProfilesResponse, error) {
 	resp, err := media.Call_GetProfiles(ctx, m.client, media.GetProfiles{})
 	if err != nil {
 		return nil, err
 	}
 
-	profiles := utils.Map(resp.Profiles, func(p onvif.Profile) Profile { return Profile(p) })
+	result := GetProfilesResponse(resp)
 
-	return profiles, nil
+	return &result, nil
+}
+
+type (
+	// GetStreamURI ...
+	GetStreamURI media.GetStreamUri
+
+	// GetStreamURIResponse ...
+	GetStreamURIResponse media.GetStreamUriResponse
+)
+
+// GetStreamURI ...
+func (m *Media) GetStreamURI(ctx context.Context, input GetStreamURI) (*GetStreamURIResponse, error) {
+	resp, err := media.Call_GetStreamUri(ctx, m.client, media.GetStreamUri(input))
+	if err != nil {
+		return nil, err
+	}
+	output := GetStreamURIResponse(resp)
+	return &output, nil
 }

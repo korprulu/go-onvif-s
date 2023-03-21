@@ -4,9 +4,9 @@ package device
 import (
 	"context"
 
+	"github.com/jfsmig/onvif/device"
 	onvifDevice "github.com/jfsmig/onvif/device"
 	"github.com/jfsmig/onvif/networking"
-	"github.com/jfsmig/onvif/xsd/onvif"
 )
 
 // Device ...
@@ -14,9 +14,10 @@ type Device struct {
 	client *networking.Client
 }
 
-var _ DeviceFunction = (*Device)(nil)
+var _ API = (*Device)(nil)
 
-func New(ctx context.Context, client *networking.Client) (DeviceFunction, error) {
+// New ...
+func New(ctx context.Context, client *networking.Client) (*Device, error) {
 	dev := &Device{client: client}
 
 	if _, err := dev.GetSystemDateAndTime(ctx); err != nil {
@@ -26,33 +27,37 @@ func New(ctx context.Context, client *networking.Client) (DeviceFunction, error)
 	return dev, nil
 }
 
-// SystemDateAndTime ...
-type SystemDateAndTime onvif.SystemDateTime
+// GetSystemDateAndTimeResponse ...
+type GetSystemDateAndTimeResponse device.GetSystemDateAndTimeResponse
 
 // GetSystemDateAndTime ...
-func (d *Device) GetSystemDateAndTime(ctx context.Context) (*SystemDateAndTime, error) {
+func (d *Device) GetSystemDateAndTime(ctx context.Context) (*GetSystemDateAndTimeResponse, error) {
 	resp, err := onvifDevice.Call_GetSystemDateAndTime(ctx, d.client, onvifDevice.GetSystemDateAndTime{})
 	if err != nil {
 		return nil, err
 	}
 
-	result := SystemDateAndTime(resp.SystemDateAndTime)
+	result := GetSystemDateAndTimeResponse(resp)
 
 	return &result, nil
 }
 
-// Capabilities ...
-type Capabilities onvif.Capabilities
+type (
+	// GetCapabilities ...
+	GetCapabilities device.GetCapabilities
+
+	// GetCapabilitiesResponse ...
+	GetCapabilitiesResponse device.GetCapabilitiesResponse
+)
 
 // GetCapabilities ...
-func (d *Device) GetCapabilities(ctx context.Context, category string) (*Capabilities, error) {
-	req := onvifDevice.GetCapabilities{Category: onvif.CapabilityCategory(category)}
-	resp, err := onvifDevice.Call_GetCapabilities(ctx, d.client, req)
+func (d *Device) GetCapabilities(ctx context.Context, input GetCapabilities) (*GetCapabilitiesResponse, error) {
+	resp, err := onvifDevice.Call_GetCapabilities(ctx, d.client, device.GetCapabilities(input))
 	if err != nil {
 		return nil, err
 	}
 
-	result := Capabilities(resp.Capabilities)
+	result := GetCapabilitiesResponse(resp)
 
 	return &result, nil
 }

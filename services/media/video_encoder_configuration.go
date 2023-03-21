@@ -6,32 +6,28 @@ import (
 
 	"github.com/jfsmig/onvif/media"
 	"github.com/jfsmig/onvif/xsd/onvif"
-	"github.com/korprulu/go-onvif-s/internal/utils"
 )
 
-// VideoEncoderConfiguration ...
-type VideoEncoderConfiguration onvif.VideoEncoderConfiguration
+// GetVideoEncoderConfigurationsResponse ...
+type GetVideoEncoderConfigurationsResponse media.GetVideoEncoderConfigurationsResponse
 
 // GetVideoEncoderConfigurations returns all of the video encoder configurations
-func (m *Media) GetVideoEncoderConfigurations(ctx context.Context) ([]VideoEncoderConfiguration, error) {
-	req := media.GetVideoEncoderConfigurations{}
-	resp, err := media.Call_GetVideoEncoderConfigurations(ctx, m.client, req)
+func (m *Media) GetVideoEncoderConfigurations(ctx context.Context) (*GetVideoEncoderConfigurationsResponse, error) {
+	resp, err := media.Call_GetVideoEncoderConfigurations(ctx, m.client, media.GetVideoEncoderConfigurations{})
 	if err != nil {
 		return nil, err
 	}
 
-	configs := utils.Map(resp.Configurations, func(cfg onvif.VideoEncoderConfiguration) VideoEncoderConfiguration {
-		return VideoEncoderConfiguration(cfg)
-	})
+	result := GetVideoEncoderConfigurationsResponse(resp)
 
-	return configs, nil
+	return &result, nil
 }
 
-// GuaranteedNumberOfVideoEncoderInstances ...
-type GuaranteedNumberOfVideoEncoderInstances media.GetGuaranteedNumberOfVideoEncoderInstancesResponse
+// GetGuaranteedNumberOfVideoEncoderInstancesResponse ...
+type GetGuaranteedNumberOfVideoEncoderInstancesResponse media.GetGuaranteedNumberOfVideoEncoderInstancesResponse
 
 // GetGuaranteedNumberOfVideoEncoderInstances ...
-func (m *Media) GetGuaranteedNumberOfVideoEncoderInstances(ctx context.Context, configurationToken onvif.ReferenceToken) (*GuaranteedNumberOfVideoEncoderInstances, error) {
+func (m *Media) GetGuaranteedNumberOfVideoEncoderInstances(ctx context.Context, configurationToken onvif.ReferenceToken) (*GetGuaranteedNumberOfVideoEncoderInstancesResponse, error) {
 	request := media.GetGuaranteedNumberOfVideoEncoderInstances{ConfigurationToken: configurationToken}
 	resp, err := media.Call_GetGuaranteedNumberOfVideoEncoderInstances(ctx, m.client, request)
 	if err != nil {

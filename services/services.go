@@ -10,16 +10,16 @@ import (
 	"github.com/korprulu/go-onvif-s/services/media"
 )
 
-// Services
+// Services ...
 type Services struct {
-	Device device.DeviceFunction
-	Media  media.MediaFunction
+	Device device.API
+	Media  media.API
 }
 
 // Option ...
 type Option func(*networking.Client) error
 
-// Info ...
+// DeviceInfo ...
 type DeviceInfo struct {
 	Addr string
 	UUID string
@@ -73,7 +73,7 @@ func WithAuth(username, password string) Option {
 	}
 }
 
-func loadMedia(capabilities *device.Capabilities, client *networking.Client) media.MediaFunction {
+func loadMedia(capabilities *device.Capabilities, client *networking.Client) media.API {
 	endpoint := string(capabilities.Media.XAddr)
 	if len(endpoint) == 0 {
 		return nil
