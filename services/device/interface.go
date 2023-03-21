@@ -4,6 +4,6 @@ import "context"
 
 // API ...
 type API interface {
-	GetSystemDateAndTime(context.Context) (*GetSystemDateAndTimeResponse, error)
-	GetCapabilities(context.Context, GetCapabilities) (*GetCapabilitiesResponse, error)
+	GetSystemDateAndTime(context.Context) (*SystemDateAndTime, error)
+	GetCapabilities(context.Context, GetCapabilitiesInput) (*Capabilities, error)
 }

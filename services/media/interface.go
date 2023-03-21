@@ -6,8 +6,8 @@ import (
 
 // API ...
 type API interface {
-	GetProfiles(context.Context) (*GetProfilesResponse, error)
-	GetVideoEncoderConfigurations(context.Context) (*GetVideoEncoderConfigurationsResponse, error)
-	GetGuaranteedNumberOfVideoEncoderInstances(context.Context, GetGuaranteedNumberOfVideoEncoderInstances) (*GetGuaranteedNumberOfVideoEncoderInstancesResponse, error)
-	GetStreamURI(context.Context, GetStreamURI) (*GetStreamURIResponse, error)
+	GetProfiles(context.Context) ([]Profile, error)
+	GetVideoEncoderConfigurations(context.Context) ([]VideoEncoderConfiguration, error)
+	GetGuaranteedNumberOfVideoEncoderInstances(context.Context, GetGuaranteedNumberOfVideoEncoderInstances) (*GuaranteedNumberOfVideoEncoderInstances, error)
+	GetStreamURI(context.Context, GetStreamURI) (*StreamURI, error)
 }

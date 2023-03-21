@@ -7,6 +7,7 @@ import (
 	"github.com/jfsmig/onvif/device"
 	onvifDevice "github.com/jfsmig/onvif/device"
 	"github.com/jfsmig/onvif/networking"
+	"github.com/jfsmig/onvif/xsd/onvif"
 )
 
 // Device ...
@@ -27,37 +28,37 @@ func New(ctx context.Context, client *networking.Client) (*Device, error) {
 	return dev, nil
 }
 
-// GetSystemDateAndTimeResponse ...
-type GetSystemDateAndTimeResponse device.GetSystemDateAndTimeResponse
+// SystemDateAndTime ...
+type SystemDateAndTime onvif.SystemDateTime
 
 // GetSystemDateAndTime ...
-func (d *Device) GetSystemDateAndTime(ctx context.Context) (*GetSystemDateAndTimeResponse, error) {
+func (d *Device) GetSystemDateAndTime(ctx context.Context) (*SystemDateAndTime, error) {
 	resp, err := onvifDevice.Call_GetSystemDateAndTime(ctx, d.client, onvifDevice.GetSystemDateAndTime{})
 	if err != nil {
 		return nil, err
 	}
 
-	result := GetSystemDateAndTimeResponse(resp)
+	result := SystemDateAndTime(resp.SystemDateAndTime)
 
 	return &result, nil
 }
 
 type (
-	// GetCapabilities ...
-	GetCapabilities device.GetCapabilities
+	// GetCapabilitiesInput ...
+	GetCapabilitiesInput device.GetCapabilities
 
-	// GetCapabilitiesResponse ...
-	GetCapabilitiesResponse device.GetCapabilitiesResponse
+	// Capabilities ...
+	Capabilities onvif.Capabilities
 )
 
 // GetCapabilities ...
-func (d *Device) GetCapabilities(ctx context.Context, input GetCapabilities) (*GetCapabilitiesResponse, error) {
+func (d *Device) GetCapabilities(ctx context.Context, input GetCapabilitiesInput) (*Capabilities, error) {
 	resp, err := onvifDevice.Call_GetCapabilities(ctx, d.client, device.GetCapabilities(input))
 	if err != nil {
 		return nil, err
 	}
 
-	result := GetCapabilitiesResponse(resp)
+	result := Capabilities(resp.Capabilities)
 
 	return &result, nil
 }
