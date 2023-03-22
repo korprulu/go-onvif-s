@@ -1,16 +1,18 @@
 // Package media ...
 package media
 
-import "github.com/jfsmig/onvif/networking"
+import (
+	"github.com/use-go/onvif"
+)
 
 // Media ...
 type Media struct {
-	client *networking.Client
+	device *onvif.Device
 }
 
 var _ API = (*Media)(nil)
 
 // New ...
-func New(client *networking.Client) *Media {
-	return &Media{client: client}
+func New(device *onvif.Device) *Media {
+	return &Media{device: device}
 }

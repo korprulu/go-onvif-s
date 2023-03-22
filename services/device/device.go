@@ -4,22 +4,22 @@ package device
 import (
 	"context"
 
-	"github.com/jfsmig/onvif/device"
-	onvifDevice "github.com/jfsmig/onvif/device"
-	"github.com/jfsmig/onvif/networking"
-	"github.com/jfsmig/onvif/xsd/onvif"
+	"github.com/use-go/onvif"
+	deviceType "github.com/use-go/onvif/device"
+	"github.com/use-go/onvif/sdk/device"
+	onvifType "github.com/use-go/onvif/xsd/onvif"
 )
 
 // Device ...
 type Device struct {
-	client *networking.Client
+	device *onvif.Device
 }
 
 var _ API = (*Device)(nil)
 
 // New ...
-func New(ctx context.Context, client *networking.Client) (*Device, error) {
-	dev := &Device{client: client}
+func New(ctx context.Context, device *onvif.Device) (*Device, error) {
+	dev := &Device{device: device}
 
 	if _, err := dev.GetSystemDateAndTime(ctx); err != nil {
 		return nil, err
@@ -29,11 +29,11 @@ func New(ctx context.Context, client *networking.Client) (*Device, error) {
 }
 
 // SystemDateAndTime ...
-type SystemDateAndTime onvif.SystemDateTime
+type SystemDateAndTime onvifType.SystemDateTime
 
 // GetSystemDateAndTime ...
 func (d *Device) GetSystemDateAndTime(ctx context.Context) (*SystemDateAndTime, error) {
-	resp, err := onvifDevice.Call_GetSystemDateAndTime(ctx, d.client, onvifDevice.GetSystemDateAndTime{})
+	resp, err := device.Call_GetSystemDateAndTime(ctx, d.device, deviceType.GetSystemDateAndTime{})
 	if err != nil {
 		return nil, err
 	}
@@ -45,15 +45,15 @@ func (d *Device) GetSystemDateAndTime(ctx context.Context) (*SystemDateAndTime, 
 
 type (
 	// GetCapabilitiesInput ...
-	GetCapabilitiesInput device.GetCapabilities
+	GetCapabilitiesInput deviceType.GetCapabilities
 
 	// Capabilities ...
-	Capabilities onvif.Capabilities
+	Capabilities onvifType.Capabilities
 )
 
 // GetCapabilities ...
 func (d *Device) GetCapabilities(ctx context.Context, input GetCapabilitiesInput) (*Capabilities, error) {
-	resp, err := onvifDevice.Call_GetCapabilities(ctx, d.client, device.GetCapabilities(input))
+	resp, err := device.Call_GetCapabilities(ctx, d.device, deviceType.GetCapabilities(input))
 	if err != nil {
 		return nil, err
 	}

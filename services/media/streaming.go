@@ -3,37 +3,24 @@ package media
 
 import (
 	"context"
-	"fmt"
-	"io"
 
-	"github.com/jfsmig/onvif/media"
-	"github.com/jfsmig/onvif/xsd/onvif"
 	"github.com/korprulu/go-onvif-s/internal/utils"
+	mediaType "github.com/use-go/onvif/media"
+	"github.com/use-go/onvif/sdk/media"
+	onvifType "github.com/use-go/onvif/xsd/onvif"
 )
 
 // Profile ...
-type Profile onvif.Profile
+type Profile onvifType.Profile
 
 // GetProfiles ...
 func (m *Media) GetProfiles(ctx context.Context) ([]Profile, error) {
-	rawResp, err := m.client.CallMethod(ctx, media.GetProfiles{})
-	if err != nil {
-		return nil, err
-	}
-	defer rawResp.Body.Close()
-
-	payload, err := io.ReadAll(rawResp.Body)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(utils.XMLFormat(payload))
-
-	resp, err := media.Call_GetProfiles(ctx, m.client, media.GetProfiles{})
+	resp, err := media.Call_GetProfiles(ctx, m.device, mediaType.GetProfiles{})
 	if err != nil {
 		return nil, err
 	}
 
-	result := utils.Map(resp.Profiles, func(p onvif.Profile) Profile {
+	result := utils.Map(resp.Profiles, func(p onvifType.Profile) Profile {
 		return Profile(p)
 	})
 
@@ -42,15 +29,15 @@ func (m *Media) GetProfiles(ctx context.Context) ([]Profile, error) {
 
 type (
 	// GetStreamURI ...
-	GetStreamURI media.GetStreamUri
+	GetStreamURI mediaType.GetStreamUri
 
 	// StreamURI ...
-	StreamURI media.GetStreamUriResponse
+	StreamURI mediaType.GetStreamUriResponse
 )
 
 // GetStreamURI ...
 func (m *Media) GetStreamURI(ctx context.Context, input GetStreamURI) (*StreamURI, error) {
-	resp, err := media.Call_GetStreamUri(ctx, m.client, media.GetStreamUri(input))
+	resp, err := media.Call_GetStreamUri(ctx, m.device, mediaType.GetStreamUri(input))
 	if err != nil {
 		return nil, err
 	}

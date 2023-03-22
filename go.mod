@@ -12,10 +12,12 @@ require (
 	github.com/beevik/etree v1.1.0 // indirect
 	github.com/elgs/gostrgen v0.0.0-20161222160715-9d61ae07eeae // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
+	github.com/juju/errors v0.0.0-20220331221717-b38fca44723b // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/use-go/onvif v0.0.9 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 )
 
-// replace github.com/use-go/onvif => ../onvif
+replace github.com/use-go/onvif v0.0.9 => ../onvif
